@@ -9,15 +9,7 @@
 byte mac[] = { 0xBA, 0xDC, 0x0D, 0xED, 0xEE, 0xE6 };
 
 IPAddress ping_addr(8,8,8,8);
-
 IPAddress ip;
-
-/*
-IPAddress ip(192,168,80,233);
-IPAddress gateway(192,168,1, 1);
-IPAddress subnet(255, 255, 0, 0);
-*/
-
 SOCKET ping_socket = 0;
 
 char buffer [256];
@@ -26,39 +18,28 @@ ICMPPing ping(ping_socket, (uint16_t)random(0, 255));
 unsigned long missed_pings = 0;
 
 void setup() {
-  // Open serial communications and wait for port to open:
   Serial.begin(9600);
-  // this check is only needed on the Leonardo:
-   while (!Serial) {
-    ; // wait for serial port to connect. Needed for Leonardo only
-  }
 
-  // start the Ethernet connection:
+  // Start the Ethernet connection:
   Serial.println("Trying to get an IP address using DHCP");
   while (Ethernet.begin(mac) == 0) {}
-  /*
-  {
-    Serial.println("Failed to configure Ethernet using DHCP");
-    // initialize the ethernet device not using DHCP:
-    Ethernet.begin(mac, ip, gateway, subnet);
-  }
-  */
-  // print your local IP address:
-  Serial.print("My IP address: ");
+
+  // Print your local IP address:
+  Serial.print("IP address: ");
   ip = Ethernet.localIP();
   for (byte thisByte = 0; thisByte < 4; thisByte++) {
-    // print the value of each byte of the IP address:
+    // Print the value of each byte of the IP address:
     Serial.print(ip[thisByte], DEC);
-    Serial.print("."); 
+    Serial.print(".");
   }
   Serial.println();
-  
+
   Serial.print("Pinging: ");
   ip = Ethernet.localIP();
   for (byte thisByte = 0; thisByte < 4; thisByte++) {
-    // print the value of each byte of the IP address:
+    // Print the value of each byte of the IP address:
     Serial.print(ping_addr[thisByte], DEC);
-    Serial.print("."); 
+    Serial.print(".");
   }
   Serial.println();
 
@@ -70,8 +51,7 @@ void setup() {
 
 void loop() {
   ICMPEchoReply echo_reply = ping(ping_addr, 1);
-  if (echo_reply.status == SUCCESS)
-  {
+  if (echo_reply.status == SUCCESS) {
     if (missed_pings >= 3) {
       Serial.println("Back online");
       digitalWrite(INFLATABLE_PIN, LOW);
@@ -80,7 +60,7 @@ void loop() {
     } else {
       Serial.println("Online");
     }
-      digitalWrite(LED_PIN, LOW);
+    digitalWrite(LED_PIN, LOW);
   } else {
     Serial.print("Offline: ");
     Serial.println(missed_pings+1);
